@@ -6,6 +6,8 @@ import (
 	"net"
 	"strconv"
 	"time"
+
+	"github.com/andresbelo12/KernelOS/model"
 )
 
 const serverPORT = 8080
@@ -27,12 +29,12 @@ func InitServerConnection() (*net.Conn, error) {
 		return nil, err
 	}
 	fmt.Println(connection.RemoteAddr().String())
-	GetConnectionType(connection)
+	//GetConnectionType(connection)
 	return &connection, err
 
 }
 
-func GetConnectionType(connection net.Conn)(string){
+func GetConnectionType(connection net.Conn) string {
 	netData, err := bufio.NewReader(connection).ReadString('\n')
 	if err != nil {
 		fmt.Println(err)
@@ -40,6 +42,9 @@ func GetConnectionType(connection net.Conn)(string){
 	}
 
 	fmt.Println(netData)
+	t := time.Now()
+	myTime := t.Format(time.RFC3339) + "\n"
+	connection.Write([]byte(myTime))
 	return ""
 }
 
@@ -47,6 +52,7 @@ func ListenConnection(connection net.Conn) {
 	defer connection.Close()
 
 	for {
+
 		netData, err := bufio.NewReader(connection).ReadString('\n')
 		if err != nil {
 			fmt.Println(err)
@@ -54,10 +60,10 @@ func ListenConnection(connection net.Conn) {
 		}
 
 		fmt.Print("-> ", string(netData))
-
-		t := time.Now()
-		myTime := t.Format(time.RFC3339) + "\n"
-		connection.Write([]byte(myTime))
+		a := model.Message{Destination: "aa", Source: "kernel"}
+		connection.Write(a.ToJson())
 	}
 
 }
+
+

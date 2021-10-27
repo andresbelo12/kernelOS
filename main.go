@@ -19,9 +19,9 @@ func LaunchModules() {
 
 func communicationServer() {
 	server := handler.InitServer()
-
+	listener := handler.CreateListener()
 	for {
-		server.InitServerConnection()
+		server.InitServerConnection(listener)
 		fmt.Println(server.Dictionary)
 	}
 

@@ -3,13 +3,12 @@ package handler
 import (
 	"fmt"
 	"net"
-	"strconv"
 	"strings"
 
 	"github.com/andresbelo12/KernelOS/model"
 )
 
-const serverPORT = 8080
+const serverPORT = "8080"
 
 type Server struct {
 	Dictionary map[string]*model.ServerConnection
@@ -19,18 +18,18 @@ func InitServer() Server {
 	return Server{Dictionary: make(map[string]*model.ServerConnection)}
 }
 
-func (server Server) InitServerConnection() (err error) {
+func (server Server) InitServerConnection(listener model.CommunicationListener) (err error) {
 
-	PORT := ":" + strconv.Itoa(serverPORT)
+	PORT := ":" + serverPORT
 
-	listener, err := net.Listen("tcp", PORT)
+	connectionDoor, err := net.Listen("tcp", PORT)
 	if err != nil {
 		fmt.Println(err)
 		return err
 	}
-	defer listener.Close()
+	defer connectionDoor.Close()
 
-	netConnection, err := listener.Accept()
+	netConnection, err := connectionDoor.Accept()
 	if err != nil {
 		fmt.Println(err)
 		return err
@@ -43,7 +42,7 @@ func (server Server) InitServerConnection() (err error) {
 	}
 	connection := server.RegisterConnection(&netConnection, message)
 
-	go ListenClient(connection)
+	go ListenClient(listener, connection)
 
 	return
 }
@@ -64,4 +63,3 @@ func (server Server) RegisterConnection(netConnection *net.Conn, message model.M
 	server.AddConnection(&connection)
 	return &connection
 }
-

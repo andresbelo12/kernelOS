@@ -17,9 +17,7 @@ type (
 		ClientConnection *net.Conn
 	}
 
-	Server interface {
-		InitServerConnection() (err error)
-		AddConnection(connection *ServerConnection)
-		RegisterConnection(netConnection *net.Conn, message Message) *ServerConnection
+	CommunicationListener interface {
+		ProcessMessage(message *Message)(error)
 	}
 )

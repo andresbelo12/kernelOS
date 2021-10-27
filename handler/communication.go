@@ -10,6 +10,16 @@ import (
 	"github.com/andresbelo12/KernelOS/model"
 )
 
+type ServerListener struct{}
+
+func CreateListener()(model.CommunicationListener){
+	return ServerListener{}
+}
+
+func (listener ServerListener)ProcessMessage(message *model.Message)(err error){
+	return
+}
+
 func EstablishClient(clientInfo *model.ClientConnection, message model.Message) (err error) {
 	connection, err := net.Dial("tcp", clientInfo.ServerHost+":"+clientInfo.ServerPort)
 	if err != nil {
@@ -43,7 +53,8 @@ func ReadMessage(connection *net.Conn) (message model.Message, err error) {
 	return
 }
 
-func ListenClient(connection *model.ServerConnection) {
+func ListenClient(listener model.CommunicationListener, connection *model.ServerConnection) {
+	defer (*connection.ClientConnection).Close()
 	for {
 		message, err := ReadMessage(connection.ClientConnection)
 		if err != nil {
@@ -54,7 +65,8 @@ func ListenClient(connection *model.ServerConnection) {
 	}
 }
 
-func ListenServer(connection *model.ClientConnection) {
+func ListenServer(listener model.CommunicationListener, connection *model.ClientConnection) {
+	defer (*connection.ServerConnection).Close()
 	for {
 		message, err := ReadMessage(connection.ServerConnection)
 		if err != nil {

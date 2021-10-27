@@ -43,7 +43,7 @@ func (server Server) InitServerConnection() (err error) {
 	}
 	connection := server.RegisterConnection(&netConnection, message)
 
-	go ListenConnection(connection)
+	go ListenClient(connection)
 
 	return
 }

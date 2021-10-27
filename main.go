@@ -4,14 +4,16 @@ import (
 	"fmt"
 
 	"github.com/andresbelo12/KernelOS/handler"
-	"github.com/andresbelo12/KernelOS/model"
 )
 
 func main() {
-	a := model.Message{Command: "a"}
-	fmt.Println(a)
 
+	LaunchModules()
 	communicationServer()
+
+}
+
+func LaunchModules() {
 
 }
 

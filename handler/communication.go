@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
 	"net"
@@ -9,13 +8,13 @@ import (
 	"github.com/andresbelo12/KernelOS/model"
 )
 
-func EstablishClient(clientInfo *model.ClientConnection, message model.Message)(err error) {
-	connection, err := net.Dial("tcp", clientInfo.ServerHost + ":" + clientInfo.ServerPort)
+func EstablishClient(clientInfo *model.ClientConnection, message model.Message) (err error) {
+	connection, err := net.Dial("tcp", clientInfo.ServerHost+":"+clientInfo.ServerPort)
 	if err != nil {
 		return
 	}
-	
-	if _, err = connection.Write(message.ToJson()); err != nil{
+
+	if _, err = connection.Write(message.ToJson()); err != nil {
 		return
 	}
 
@@ -35,16 +34,27 @@ func ReadMessage(connection *net.Conn) (message model.Message, err error) {
 		return
 	}
 
-	if err = json.Unmarshal(buffer[:bufferLength], &message); err != nil {
+	if message, err = model.ToMessage(buffer, bufferLength); err != nil {
 		return
 	}
 
 	return
 }
 
-func ListenConnection(connection *model.ServerConnection) {
+func ListenClient(connection *model.ServerConnection) {
 	for {
 		message, err := ReadMessage(connection.ClientConnection)
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+		fmt.Println(message)
+	}
+}
+
+func ListenServer(connection *model.ClientConnection) {
+	for {
+		message, err := ReadMessage(connection.ServerConnection)
 		if err != nil {
 			fmt.Println(err.Error())
 			return
@@ -57,4 +67,8 @@ func WriteConnection(connection *model.ServerConnection, message *model.Message)
 	if _, err := (*connection.ClientConnection).Write(message.ToJson()); err != nil {
 		panic(err)
 	}
+}
+
+func ProcessMessage(message *model.Message) {
+
 }

@@ -20,3 +20,8 @@ func (msg Message) ToJson() (byteMessage []byte) {
 
 	return
 }
+
+func ToMessage(byteMessage []byte, bufferLength int)(message Message,err error){
+	err = json.Unmarshal(byteMessage[:bufferLength], &message)
+	return
+}

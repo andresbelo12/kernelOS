@@ -1,11 +1,9 @@
 package handler
 
 import (
-	"bufio"
 	"fmt"
 	"io"
 	"net"
-	"os"
 
 	"github.com/andresbelo12/KernelOS/model"
 )
@@ -77,21 +75,18 @@ func ListenServer(listenerTools interface{}, listener model.CommunicationListene
 	}
 }
 
-func WriteConnection(connection *model.ServerConnection, message *model.Message) (err error) {
+func WriteServer(connection *model.ClientConnection, message *model.Message) (err error) {
+	if _, err := (*connection.ServerConnection).Write(message.ToJson()); err != nil {
+		fmt.Println(err.Error())
+		return err
+	}
+	return
+}
+
+func WriteClient(connection *model.ServerConnection, message *model.Message) (err error) {
 	if _, err := (*connection.ClientConnection).Write(message.ToJson()); err != nil {
 		fmt.Println(err.Error())
 		return err
 	}
-
 	return
-}
-
-func ProcessMessage(connection *model.ServerConnection) {
-	reader := bufio.NewReader(os.Stdin)
-	fmt.Print(">> ")
-	text, _ := reader.ReadString('\n')
-	fmt.Print(text)
-
-	a := model.Message{Source: "name", Command: "ndrrerda"}
-	WriteConnection(connection, &a)
 }

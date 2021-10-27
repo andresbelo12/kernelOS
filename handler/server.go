@@ -64,3 +64,4 @@ func (server Server) RegisterConnection(netConnection *net.Conn, message model.M
 	server.AddConnection(&connection)
 	return &connection
 }
+

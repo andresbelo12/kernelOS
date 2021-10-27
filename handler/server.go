@@ -44,7 +44,7 @@ func (server Server) InitServerConnection(listener model.CommunicationListener) 
 	}
 	connection := server.RegisterConnection(&netConnection, message)
 
-	go ListenClient(listener, connection)
+	go ListenClient(nil, listener, connection)
 	go sendMessage(connection)
 	return
 }

@@ -53,7 +53,7 @@ func ReadMessage(connection *net.Conn) (message model.Message, err error) {
 	return
 }
 
-func ListenClient(listener model.CommunicationListener, connection *model.ServerConnection)(err error) {
+func ListenClient(listenerTools interface{}, listener model.CommunicationListener, connection *model.ServerConnection)(err error) {
 	defer (*connection.ClientConnection).Close()
 	for {
 		message, err := ReadMessage(connection.ClientConnection)
@@ -61,11 +61,11 @@ func ListenClient(listener model.CommunicationListener, connection *model.Server
 			fmt.Println(err.Error())
 			return err
 		}
-		fmt.Println(message)
+		listener.ProcessMessage(listenerTools, &message)
 	}
 }
 
-func ListenServer(listener model.CommunicationListener, connection *model.ClientConnection)(err error) {
+func ListenServer(listenerTools interface{}, listener model.CommunicationListener, connection *model.ClientConnection)(err error) {
 	defer (*connection.ServerConnection).Close()
 	for {
 		message, err := ReadMessage(connection.ServerConnection)
@@ -73,7 +73,7 @@ func ListenServer(listener model.CommunicationListener, connection *model.Client
 			fmt.Println(err.Error())
 			return err
 		}
-		fmt.Println(message)
+		listener.ProcessMessage(listenerTools, &message)
 	}
 }
 

@@ -55,7 +55,7 @@ func sendMessage(connection *model.ServerConnection) {
 		fmt.Print(">> ")
 		text, _ := reader.ReadString('\n')
 		fmt.Print("--->" + text)
-		WriteConnection(connection, &model.Message{Command: model.CMD_SEND, Source: model.MD_KERNEL, Destination: model.MD_FILES, Message: "prueba"})
+		WriteConnection(connection, &model.Message{Command: model.CMD_SEND, Source: model.MD_KERNEL, Destination: model.MD_FILES, Message: "log:created"})
 	}
 }
 

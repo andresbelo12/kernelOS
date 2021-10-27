@@ -12,11 +12,11 @@ import (
 
 type ServerListener struct{}
 
-func CreateListener()(model.CommunicationListener){
+func CreateListener() model.CommunicationListener {
 	return ServerListener{}
 }
 
-func (listener ServerListener)ProcessMessage(processorTools interface{}, message *model.Message)(err error){
+func (listener ServerListener) ProcessMessage(processorTools interface{}, conncetion interface{}, message *model.Message) (err error) {
 	return
 }
 
@@ -53,7 +53,7 @@ func ReadMessage(connection *net.Conn) (message model.Message, err error) {
 	return
 }
 
-func ListenClient(listenerTools interface{}, listener model.CommunicationListener, connection *model.ServerConnection)(err error) {
+func ListenClient(listenerTools interface{}, listener model.CommunicationListener, connection *model.ServerConnection) (err error) {
 	defer (*connection.ClientConnection).Close()
 	for {
 		message, err := ReadMessage(connection.ClientConnection)
@@ -61,11 +61,11 @@ func ListenClient(listenerTools interface{}, listener model.CommunicationListene
 			fmt.Println(err.Error())
 			return err
 		}
-		listener.ProcessMessage(listenerTools, &message)
+		listener.ProcessMessage(listenerTools, &connection, &message)
 	}
 }
 
-func ListenServer(listenerTools interface{}, listener model.CommunicationListener, connection *model.ClientConnection)(err error) {
+func ListenServer(listenerTools interface{}, listener model.CommunicationListener, connection *model.ClientConnection) (err error) {
 	defer (*connection.ServerConnection).Close()
 	for {
 		message, err := ReadMessage(connection.ServerConnection)
@@ -73,16 +73,16 @@ func ListenServer(listenerTools interface{}, listener model.CommunicationListene
 			fmt.Println(err.Error())
 			return err
 		}
-		listener.ProcessMessage(listenerTools, &message)
+		listener.ProcessMessage(listenerTools, &connection, &message)
 	}
 }
 
-func WriteConnection(connection *model.ServerConnection, message *model.Message)(err error) {
+func WriteConnection(connection *model.ServerConnection, message *model.Message) (err error) {
 	if _, err := (*connection.ClientConnection).Write(message.ToJson()); err != nil {
 		fmt.Println(err.Error())
 		return err
 	}
-	
+
 	return
 }
 

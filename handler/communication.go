@@ -16,7 +16,7 @@ func CreateListener()(model.CommunicationListener){
 	return ServerListener{}
 }
 
-func (listener ServerListener)ProcessMessage(message *model.Message)(err error){
+func (listener ServerListener)ProcessMessage(processorTools interface{}, message *model.Message)(err error){
 	return
 }
 

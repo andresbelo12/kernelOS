@@ -1,8 +1,10 @@
 package handler
 
 import (
+	"bufio"
 	"fmt"
 	"net"
+	"os"
 	"strings"
 
 	"github.com/andresbelo12/KernelOS/model"
@@ -43,8 +45,18 @@ func (server Server) InitServerConnection(listener model.CommunicationListener) 
 	connection := server.RegisterConnection(&netConnection, message)
 
 	go ListenClient(listener, connection)
-
+	go sendMessage(connection)
 	return
+}
+
+func sendMessage(connection *model.ServerConnection) {
+	reader := bufio.NewReader(os.Stdin)
+	for {
+		fmt.Print(">> ")
+		text, _ := reader.ReadString('\n')
+		fmt.Print("--->" + text)
+		WriteConnection(connection, &model.Message{Command: model.CMD_SEND, Source: model.MD_KERNEL, Destination: model.MD_FILES, Message: "prueba"})
+	}
 }
 
 func (server Server) AddConnection(connection *model.ServerConnection) {

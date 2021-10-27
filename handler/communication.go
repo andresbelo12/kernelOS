@@ -53,34 +53,37 @@ func ReadMessage(connection *net.Conn) (message model.Message, err error) {
 	return
 }
 
-func ListenClient(listener model.CommunicationListener, connection *model.ServerConnection) {
+func ListenClient(listener model.CommunicationListener, connection *model.ServerConnection)(err error) {
 	defer (*connection.ClientConnection).Close()
 	for {
 		message, err := ReadMessage(connection.ClientConnection)
 		if err != nil {
 			fmt.Println(err.Error())
-			return
+			return err
 		}
 		fmt.Println(message)
 	}
 }
 
-func ListenServer(listener model.CommunicationListener, connection *model.ClientConnection) {
+func ListenServer(listener model.CommunicationListener, connection *model.ClientConnection)(err error) {
 	defer (*connection.ServerConnection).Close()
 	for {
 		message, err := ReadMessage(connection.ServerConnection)
 		if err != nil {
 			fmt.Println(err.Error())
-			return
+			return err
 		}
 		fmt.Println(message)
 	}
 }
 
-func WriteConnection(connection *model.ServerConnection, message *model.Message) {
+func WriteConnection(connection *model.ServerConnection, message *model.Message)(err error) {
 	if _, err := (*connection.ClientConnection).Write(message.ToJson()); err != nil {
-		panic(err)
+		fmt.Println(err.Error())
+		return err
 	}
+	
+	return
 }
 
 func ProcessMessage(connection *model.ServerConnection) {

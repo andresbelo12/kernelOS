@@ -5,6 +5,16 @@ import (
 	"fmt"
 )
 
+const(
+	MD_FILES    = "FILES"
+	MD_KERNEL   = "KERNEL"
+	MD_GUI      = "GUI"
+	CMD_START   = "start"
+	CMD_SEND    = "send"
+	CMD_INFO    = "info"
+	CMD_STOP    = "stop"
+)
+
 type Message struct {
 	Command     string `json:"cmd"`
 	Source      string `json:"src"`

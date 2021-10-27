@@ -1,70 +1,66 @@
 package handler
 
 import (
-	"bufio"
 	"fmt"
 	"net"
 	"strconv"
-	"time"
+	"strings"
 
 	"github.com/andresbelo12/KernelOS/model"
-	
 )
 
 const serverPORT = 8080
 
-func InitServerConnection() (*net.Conn, error) {
+type Server struct {
+	Dictionary map[string]*model.ServerConnection
+}
+
+func InitServer() Server {
+	return Server{Dictionary: make(map[string]*model.ServerConnection)}
+}
+
+func (server Server) InitServerConnection() (err error) {
 
 	PORT := ":" + strconv.Itoa(serverPORT)
 
 	listener, err := net.Listen("tcp", PORT)
 	if err != nil {
 		fmt.Println(err)
-		return nil, err
+		return err
 	}
 	defer listener.Close()
 
-	connection, err := listener.Accept()
+	netConnection, err := listener.Accept()
 	if err != nil {
 		fmt.Println(err)
-		return nil, err
+		return err
 	}
-	fmt.Println(connection.RemoteAddr().String())
-	//GetConnectionType(connection)
-	return &connection, err
 
-}
-
-func GetConnectionType(connection net.Conn) string {
-	netData, err := bufio.NewReader(connection).ReadString('\n')
+	message, err := ReadMessage(&netConnection)
 	if err != nil {
-		fmt.Println(err)
-		return ""
+		fmt.Println(err.Error())
+		return
 	}
+	connection := server.RegisterConnection(&netConnection, message)
 
-	fmt.Println(netData)
-	t := time.Now()
-	myTime := t.Format(time.RFC3339) + "\n"
-	connection.Write([]byte(myTime))
-	return ""
+	go ListenConnection(connection)
+
+	return
 }
 
-func ListenConnection(connection net.Conn) {
-	defer connection.Close()
-
-	for {
-
-		netData, err := bufio.NewReader(connection).ReadString('\n')
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-
-		fmt.Print("-> ", string(netData))
-		a := model.Message{Destination: "aa", Source: "kernel"}
-		connection.Write(a.ToJson())
-	}
-
+func (server Server) AddConnection(connection *model.ServerConnection) {
+	server.Dictionary[(*connection).ClientName] = connection
 }
 
+func (server Server) RegisterConnection(netConnection *net.Conn, message model.Message) *model.ServerConnection {
+	var connection model.ServerConnection
 
+	connectionInfo := strings.Split((*netConnection).RemoteAddr().String(), ":")
+	connection.ClientHost = connectionInfo[0]
+	connection.ClientPort = connectionInfo[1]
+	connection.ClientName = message.Source
+	connection.ClientConnection = netConnection
+
+	server.AddConnection(&connection)
+	return &connection
+}

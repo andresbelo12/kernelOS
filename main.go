@@ -16,13 +16,11 @@ func main() {
 }
 
 func communicationServer() {
-	for {
-		serverConnection, err := handler.InitServerConnection()
-		if err != nil {
-			return
-		}
+	server := handler.InitServer()
 
-		go handler.ListenConnection(*serverConnection)
+	for {
+		server.InitServerConnection()
+		fmt.Println(server.Dictionary)
 	}
 
 }

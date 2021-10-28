@@ -20,6 +20,17 @@ func InitServer() Server {
 	return Server{Dictionary: make(map[string]*model.ServerConnection)}
 }
 
+type ServerListener struct{}
+
+func CreateListener() model.CommunicationListener {
+	return ServerListener{}
+}
+
+func (listener ServerListener) ProcessMessage(processorTools interface{}, conncetion interface{}, message *model.Message) (err error) {
+	fmt.Println(message)
+	return
+}
+
 func (server Server) InitServerConnection(listener model.CommunicationListener) (err error) {
 
 	PORT := ":" + serverPORT
@@ -54,8 +65,25 @@ func sendMessage(connection *model.ServerConnection) {
 	for {
 		fmt.Print(">> ")
 		text, _ := reader.ReadString('\n')
-		fmt.Print("--->" + text)
-		WriteClient(connection, &model.Message{Command: model.CMD_SEND, Source: model.MD_KERNEL, Destination: model.MD_FILES, Message: "log:created"})
+		fmt.Println(strings.ReplaceAll(text, "\r\n", ""))
+		a:=strings.ReplaceAll(text, "\r\n", "")
+
+		if a == "a"{
+			WriteClient(connection, &model.Message{Command: model.CMD_SEND, Source: model.MD_KERNEL, Destination: model.MD_FILES, Message: "log:created"})
+		}
+		if a == "b"{
+			WriteClient(connection, &model.Message{Command: model.CMD_SEND, Source: model.MD_KERNEL, Destination: model.MD_GUI, Message: "un mensaje x"})
+		}
+		if a == "c"{
+			WriteClient(connection, &model.Message{Command: model.CMD_SEND, Source: model.MD_KERNEL, Destination: model.MD_GUI, Message: "action:created"})
+		}
+		if a == "d"{
+			WriteClient(connection, &model.Message{Command: model.CMD_SEND, Source: model.MD_KERNEL, Destination: model.MD_FILES, Message: "create:sample"})
+		}
+		if a == "e"{
+			WriteClient(connection, &model.Message{Command: model.CMD_SEND, Source: model.MD_KERNEL, Destination: model.MD_FILES, Message: "delete:sample"})
+		}
+		
 	}
 }
 

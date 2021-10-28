@@ -1,22 +1,13 @@
 package handler
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"net"
 
 	"github.com/andresbelo12/KernelOS/model"
 )
-
-type ServerListener struct{}
-
-func CreateListener() model.CommunicationListener {
-	return ServerListener{}
-}
-
-func (listener ServerListener) ProcessMessage(processorTools interface{}, conncetion interface{}, message *model.Message) (err error) {
-	return
-}
 
 func EstablishClient(clientInfo *model.ClientConnection, message model.Message) (err error) {
 	connection, err := net.Dial("tcp", clientInfo.ServerHost+":"+clientInfo.ServerPort)
@@ -52,6 +43,9 @@ func ReadMessage(connection *net.Conn) (message model.Message, err error) {
 }
 
 func ListenClient(listenerTools interface{}, listener model.CommunicationListener, connection *model.ServerConnection) (err error) {
+	if listenerTools == nil || listener == nil || connection == nil{
+		return errors.New("pointer is missing")
+	}
 	defer (*connection.ClientConnection).Close()
 	for {
 		message, err := ReadMessage(connection.ClientConnection)
@@ -64,6 +58,10 @@ func ListenClient(listenerTools interface{}, listener model.CommunicationListene
 }
 
 func ListenServer(listenerTools interface{}, listener model.CommunicationListener, connection *model.ClientConnection) (err error) {
+	if listenerTools == nil || listener == nil || connection == nil{
+		return errors.New("pointer is missing")
+	}
+
 	defer (*connection.ServerConnection).Close()
 	for {
 		message, err := ReadMessage(connection.ServerConnection)

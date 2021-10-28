@@ -1,10 +1,8 @@
 package handler
 
 import (
-	"bufio"
 	"fmt"
 	"net"
-	"os"
 	"strings"
 
 	"github.com/andresbelo12/KernelOS/model"
@@ -19,7 +17,6 @@ type Server struct {
 func InitServer() Server {
 	return Server{Dictionary: make(map[string]*model.ServerConnection)}
 }
-
 
 func (server Server) InitServerConnection(listener model.CommunicationListener) (err error) {
 
@@ -46,39 +43,39 @@ func (server Server) InitServerConnection(listener model.CommunicationListener) 
 	connection := server.RegisterConnection(&netConnection, message)
 
 	go ListenClient(listener, connection)
-	go sendMessage(connection)
+	//go sendMessage(connection)
 	return
 }
 
-func sendMessage(connection *model.ServerConnection) {
+/*func sendMessage(connection *model.ServerConnection) {
 	reader := bufio.NewReader(os.Stdin)
 	for {
 		fmt.Print(">> ")
 		text, _ := reader.ReadString('\n')
 		fmt.Println(strings.ReplaceAll(text, "\r\n", ""))
-		a:=strings.ReplaceAll(text, "\r\n", "")
+		a := strings.ReplaceAll(text, "\r\n", "")
 		var err error
-		if a == "a"{
-			err = WriteClient(connection, &model.Message{Command: model.CMD_SEND, Source: model.MD_KERNEL, Destination: model.MD_FILES, Message: "log:created"});
+		if a == "a" {
+			err = WriteClient(connection, &model.Message{Command: model.CMD_SEND, Source: model.MD_KERNEL, Destination: model.MD_FILES, Message: "log:created"})
 		}
-		if a == "b"{
-			err =WriteClient(connection, &model.Message{Command: model.CMD_SEND, Source: model.MD_KERNEL, Destination: model.MD_GUI, Message: "un mensaje x"})
+		if a == "b" {
+			err = WriteClient(connection, &model.Message{Command: model.CMD_SEND, Source: model.MD_KERNEL, Destination: model.MD_GUI, Message: "un mensaje x"})
 		}
-		if a == "c"{
-			err =WriteClient(connection, &model.Message{Command: model.CMD_SEND, Source: model.MD_KERNEL, Destination: model.MD_GUI, Message: "action:created"})
+		if a == "c" {
+			err = WriteClient(connection, &model.Message{Command: model.CMD_SEND, Source: model.MD_KERNEL, Destination: model.MD_GUI, Message: "action:created"})
 		}
-		if a == "d"{
-			err =WriteClient(connection, &model.Message{Command: model.CMD_SEND, Source: model.MD_KERNEL, Destination: model.MD_FILES, Message: "create:sample"})
+		if a == "d" {
+			err = WriteClient(connection, &model.Message{Command: model.CMD_SEND, Source: model.MD_GUI, Destination: model.MD_FILES, Message: "create:sample"})
 		}
-		if a == "e"{
-			err =WriteClient(connection, &model.Message{Command: model.CMD_SEND, Source: model.MD_KERNEL, Destination: model.MD_FILES, Message: "delete:sample"})
+		if a == "e" {
+			err = WriteClient(connection, &model.Message{Command: model.CMD_SEND, Source: model.MD_GUI, Destination: model.MD_FILES, Message: "delete:sample"})
 		}
-		if err != nil{
+		if err != nil {
 			return
 		}
-		
+
 	}
-}
+}*/
 
 func (server Server) AddConnection(connection *model.ServerConnection) {
 	server.Dictionary[(*connection).ClientName] = connection

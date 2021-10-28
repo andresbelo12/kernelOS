@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/andresbelo12/KernelOS/handler"
 )
 
@@ -19,10 +17,9 @@ func LaunchModules() {
 
 func communicationServer() {
 	server := handler.InitServer()
-	listener := handler.CreateListener()
+	listener := handler.CreateListener(&server)
 	for {
 		server.InitServerConnection(listener)
-		fmt.Println(server.Dictionary)
 	}
 
 }

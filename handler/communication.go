@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	"net"
@@ -42,34 +41,29 @@ func ReadMessage(connection *net.Conn) (message model.Message, err error) {
 	return
 }
 
-func ListenClient(listenerTools interface{}, listener model.CommunicationListener, connection *model.ServerConnection) (err error) {
-	if listenerTools == nil || listener == nil || connection == nil{
-		return errors.New("pointer is missing")
-	}
+func ListenClient(listener model.CommunicationListener, connection *model.ServerConnection) (err error) {
 	defer (*connection.ClientConnection).Close()
+
 	for {
 		message, err := ReadMessage(connection.ClientConnection)
 		if err != nil {
 			fmt.Println(err.Error())
 			return err
 		}
-		listener.ProcessMessage(listenerTools, &connection, &message)
+		listener.ProcessMessage(&connection, &message)
 	}
 }
 
-func ListenServer(listenerTools interface{}, listener model.CommunicationListener, connection *model.ClientConnection) (err error) {
-	if listenerTools == nil || listener == nil || connection == nil{
-		return errors.New("pointer is missing")
-	}
-
+func ListenServer(listener model.CommunicationListener, connection *model.ClientConnection) (err error) {
 	defer (*connection.ServerConnection).Close()
+
 	for {
 		message, err := ReadMessage(connection.ServerConnection)
 		if err != nil {
 			fmt.Println(err.Error())
 			return err
 		}
-		listener.ProcessMessage(listenerTools, &connection, &message)
+		listener.ProcessMessage(&connection, &message)
 	}
 }
 

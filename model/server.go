@@ -18,6 +18,6 @@ type (
 	}
 
 	CommunicationListener interface {
-		ProcessMessage(processorTools interface{}, conncetion interface{}, message *Message)(error)
+		ProcessMessage(conncetion interface{}, message *Message)(error)
 	}
 )
